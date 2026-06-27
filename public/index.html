@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Roblox File Converter</title>
+<style>
+:root{
+  --bg:#0d1117;--panel:#161b22;--panel2:#1c2128;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#1f6feb;
+  --ok:#3fb950;--warn:#d29922;--error:#f85149;--tag:#21262d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:32px 16px}
+.wrap{width:100%;max-width:680px}
+h1{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.tagline{color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.6}
+
+/* ── tabs ── */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px}
+.tab{padding:8px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:6px 6px 0 0;border:1px solid transparent;border-bottom:none;transition:color .15s,background .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);background:var(--panel);border-color:var(--border);border-bottom-color:var(--panel)}
+.pane{display:none}.pane.active{display:block}
+
+/* ── card ── */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px}
+label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.row{margin-bottom:16px}
+
+/* ── drop zone ── */
+.drop{border:1.5px dashed var(--border);border-radius:8px;padding:22px 14px;text-align:center;cursor:pointer;background:var(--panel2);transition:border-color .15s,background .15s}
+.drop:hover,.drop.drag{border-color:var(--accent);background:#161d2a}
+.drop input{display:none}
+.drop .ico{font-size:28px;line-height:1;margin-bottom:5px}
+.drop .hint{font-size:13px;color:var(--muted)}
+.drop .fname{font-size:12px;color:var(--accent);margin-top:4px;word-break:break-all}
+code{background:var(--tag);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-size:11px;font-family:ui-monospace,monospace}
+
+/* ── select ── */
+select{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238b949e' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.note{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}
+
+/* ── button ── */
+button{width:100%;background:linear-gradient(180deg,#2d7dd2,var(--accent2));border:none;color:#fff;font-weight:600;font-size:14px;padding:12px;border-radius:8px;cursor:pointer;transition:filter .15s}
+button:hover:not(:disabled){filter:brightness(1.1)}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── progress ── */
+.prog{height:3px;background:var(--panel2);border-radius:2px;margin-top:12px;overflow:hidden;display:none}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0%;transition:width .25s}
+
+/* ── result card ── */
+.result-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;display:none}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.stat-lbl{font-size:11px;color:var(--muted);margin-bottom:2px}
+.stat-val{font-size:15px;font-weight:700}
+.stat-val.g{color:var(--ok)}.stat-val.y{color:var(--warn)}.stat-val.b{color:var(--accent)}
+.dl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--ok);color:#0d1117;font-weight:700;font-size:13px;padding:8px 16px;border-radius:7px;text-decoration:none}
+.dl-btn:hover{filter:brightness(1.1)}
+.dl-btn.sec{background:var(--accent2);color:#fff}
+details.warns{margin-top:12px;background:#1f1a0e;border:1px solid #3d2e06;border-radius:8px;padding:10px 14px}
+details.warns summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--warn)}
+details.warns ul{margin:8px 0 0;padding-left:16px;font-size:12px;color:#c9a227;line-height:1.7}
+.err-msg{color:var(--error);font-size:13px;padding:12px 0}
+
+/* ── mesh stat chips ── */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{background:var(--tag);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--muted)}
+.chip.on{border-color:var(--accent);color:var(--accent)}
+
+footer{color:var(--muted);font-size:11px;text-align:center;margin-top:16px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Roblox File Converter</h1>
+  <p class="tagline">Convert binary Roblox place/model files to XML with year-compatibility filtering,<br>or convert <code>.mesh</code> geometry files to OBJ for use in any 3D tool.</p>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="place">🗺 Place / Model</div>
+    <div class="tab" data-tab="mesh">🧊 Mesh (.mesh → OBJ)</div>
+  </div>
+
+  <!-- ══════════════ PLACE / MODEL TAB ══════════════ -->
+  <div class="pane active" id="pane-place">
+    <div class="card">
+      <div class="row">
+        <label>Place or model file</label>
+        <div class="drop" id="plDrop">
+          <input type="file" id="plFile" accept=".rbxl,.rbxm,.rbxlx,.rbxmx"/>
+          <div class="ico">📦</div>
+          <div class="hint">Click or drag a <code>.rbxl</code> / <code>.rbxm</code> / <code>.rbxlx</code> / <code>.rbxmx</code></div>
+          <div class="fname" id="plFname"></div>
+        </div>
+      </div>
+      <div class="row">
+        <label>Target year compatibility</label>
+        <select id="plYear">
+          <option value="">Keep everything — no filtering</option>
+          <optgroup label="Early Roblox (2006–2010)">
+            <option value="2006">2006 — Very early, basic classes only</option>
+            <option value="2007">2007 — Scripts, basic parts, no GUI</option>
+            <option value="2008">2008 — LocalScripts, ClickDetectors, BillboardGui</option>
+            <option value="2009">2009 — VehicleSeat added, pre-Terrain</option>
+            <option value="2010">2010 — CornerWedgePart, TeleportService</option>
+          </optgroup>
+          <optgroup label="Classic era (2011–2014)">
+            <option value="2011">2011 — Terrain (blocky), no ModuleScripts</option>
+            <option value="2012" selected>2012 — ParticleEmitters, Dialog. No Constraints/CSG</option>
+            <option value="2013">2013 — ModuleScripts, HttpService, ParticleEmitters</option>
+            <option value="2014">2014 — Constraints, Folders, CSG, StarterPlayer</option>
+          </optgroup>
+          <optgroup label="Mid era (2015–2017)">
+            <option value="2015">2015 — Smooth Terrain, TweenService, PathfindingService</option>
+            <option value="2016">2016 — R15 Humanoid, UITableLayout</option>
+            <option value="2017">2017 — WeldConstraint, MeshPart, Beam, Trail ← MeshParts kept</option>
+          </optgroup>
+          <optgroup label="Modern (2018–2024)">
+            <option value="2018">2018 — Atmosphere, Tags, CollisionGroupId</option>
+            <option value="2019">2019 — ProximityPrompts, DisplayName</option>
+            <option value="2020">2020 — AttributesSerialize, ExposureCompensation</option>
+            <option value="2021">2021 — SurfaceAppearance, TextChatService</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024 — Only engine-internal props stripped</option>
+          </optgroup>
+        </select>
+        <div class="note" id="plNote">MeshParts → Part+SpecialMesh. Content asset IDs → old string format. SecurityCapabilities, UniqueId, Attributes stripped. Default properties removed to minimise file size.</div>
+      </div>
+      <div class="row" style="margin-bottom:0">
+        <button id="plBtn" disabled>Convert</button>
+        <div class="prog" id="plProg"><div class="prog-bar" id="plBar"></div></div>
+      </div>
+    </div>
+    <div class="result-card" id="plResult">
+      <div class="stats-grid" id="plStats"></div>
+      <div class="dl-row" id="plDlRow"></div>
+      <details class="warns" id="plWarns" style="display:none">
+        <summary id="plWarnSum"></summary>
+        <ul id="plWarnList"></ul>
+      </details>
+    </div>
+  </div>
+
+  <!-- ══════════════ MESH TAB ══════════════ -->
+  <div class="pane" id="pane-mesh">
+    <div class="card">
+      <div class="row">
+        <label>Mesh file</label>
+        <div class="drop" id="msDrop">
+          <input type="file" id="msFile" accept=".mesh"/>
+          <div class="ico">🧊</div>
+          <div class="hint">Click or drag a Roblox <code>.mesh</code> file (v1.00 – v5.00)</div>
+          <div class="fname" id="msFname"></div>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom:0">
+        <button id="msBtn" disabled>Convert to OBJ</button>
+        <div class="prog" id="msProg"><div class="prog-bar" id="msBar"></div></div>
+      </div>
+    </div>
+    <div class="result-card" id="msResult">
+      <div class="stats-grid" id="msStats"></div>
+      <div class="chips" id="msChips"></div>
+      <div class="dl-row" id="msDlRow" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <footer>
+    Runs entirely on your machine — files never leave localhost.<br/>
+    Binary format: LZ4 + ZSTD chunks · Mesh: v1.00–v5.00 · Year compat: 2006–2024
+  </footer>
+</div>
+
+<script>
+// ── tab switching ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab,.pane').forEach(el => el.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('pane-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+function fmtBytes(n) {
+  if (!n) return '0 B';
+  if (n < 1024) return n + ' B';
+  if (n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+  return (n/1024/1024).toFixed(2) + ' MB';
+}
+function fmtNum(n) { return Number(n).toLocaleString(); }
+function esc(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
+function makeDrop(dropEl, inputEl, fnameEl, btnEl, accept) {
+  dropEl.addEventListener('click', () => inputEl.click());
+  dropEl.addEventListener('dragover', e => { e.preventDefault(); dropEl.classList.add('drag'); });
+  dropEl.addEventListener('dragleave', () => dropEl.classList.remove('drag'));
+  dropEl.addEventListener('drop', e => {
+    e.preventDefault(); dropEl.classList.remove('drag');
+    if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+  });
+  inputEl.addEventListener('change', () => { if (inputEl.files[0]) setFile(inputEl.files[0]); });
+
+  let _file = null;
+  function setFile(f) {
+    _file = f;
+    fnameEl.textContent = f.name + ' (' + fmtBytes(f.size) + ')';
+    btnEl.disabled = false;
+    dropEl.querySelector('.ico').textContent =
+      f.name.endsWith('.rbxm') || f.name.endsWith('.rbxmx') ? '🧩' :
+      f.name.endsWith('.mesh') ? '🧊' : '🗺️';
+  }
+  return { getFile: () => _file };
+}
+
+function makeProgress(progEl, barEl) {
+  let timer = null;
+  let prog = 0;
+  return {
+    start() { progEl.style.display='block'; prog=0; barEl.style.width='0%'; timer = setInterval(()=>{ prog=Math.min(prog+(100-prog)*0.07,92); barEl.style.width=prog+'%'; },120); },
+    done()  { clearInterval(timer); barEl.style.width='100%'; setTimeout(()=>{ progEl.style.display='none'; barEl.style.width='0%'; },500); },
+    stop()  { clearInterval(timer); barEl.style.width='0%'; setTimeout(()=>{ progEl.style.display='none'; },200); },
+  };
+}
+
+// ── YEAR NOTES ────────────────────────────────────────────────────────────────
+const NOTES = {
+  '':     'No filtering. All classes, properties and XML types kept as-is.',
+  '2006': 'Very early Roblox. MeshParts→Part+SpecialMesh. Heavy replacement.',
+  '2007': 'Early Roblox. MeshParts→Part+SpecialMesh. Content IDs→string.',
+  '2008': 'LocalScripts, ClickDetectors. MeshParts→Part+SpecialMesh.',
+  '2009': 'VehicleSeat. MeshParts→Part+SpecialMesh.',
+  '2010': 'CornerWedgePart. MeshParts→Part+SpecialMesh.',
+  '2011': 'Blocky Terrain. MeshParts→Part+SpecialMesh.',
+  '2012': 'Classic Roblox. MeshParts→Part+SpecialMesh. SecurityCapabilities/UniqueId/Attributes stripped. Legacy <url> Content format.',
+  '2013': 'ModuleScripts, ParticleEmitters. MeshParts→Part+SpecialMesh.',
+  '2014': 'Constraints, Folders, CSG (Union). MeshParts→Part+SpecialMesh.',
+  '2015': 'Smooth Terrain, TweenService. MeshParts→Part+SpecialMesh.',
+  '2016': 'R15 Humanoid. MeshParts→Part+SpecialMesh.',
+  '2017': 'WeldConstraint, Beam, Trail added. MeshParts kept from this year.',
+  '2018': 'Modern physics, Atmosphere. Minor stripping.',
+  '2019': 'ProximityPrompts, DisplayName. Minor stripping.',
+  '2020': 'AttributesSerialize. Mostly modern.',
+  '2021': 'SurfaceAppearance, TextChatService. Minor stripping.',
+  '2022': 'Minor stripping.', '2023': 'Minimal.', '2024': 'Engine-internal props only.',
+};
+
+const plYear = document.getElementById('plYear');
+const plNote = document.getElementById('plNote');
+plYear.addEventListener('change', () => { plNote.textContent = NOTES[plYear.value] || ''; });
+
+// ═══════════════ PLACE/MODEL CONVERSION ═══════════════════════════════════════
+const plDrop  = makeDrop(document.getElementById('plDrop'), document.getElementById('plFile'), document.getElementById('plFname'), document.getElementById('plBtn'));
+const plProg  = makeProgress(document.getElementById('plProg'), document.getElementById('plBar'));
+const plBtn   = document.getElementById('plBtn');
+const plRes   = document.getElementById('plResult');
+const plStats = document.getElementById('plStats');
+const plDlRow = document.getElementById('plDlRow');
+const plWarns = document.getElementById('plWarns');
+const plWarnSum  = document.getElementById('plWarnSum');
+const plWarnList = document.getElementById('plWarnList');
+
+plBtn.addEventListener('click', async () => {
+  const f = plDrop.getFile(); if (!f) return;
+  plBtn.disabled = true; plBtn.textContent = 'Converting…';
+  plProg.start(); plRes.style.display = 'none';
+
+  const form = new FormData();
+  form.append('file', f);
+  if (plYear.value) form.append('year', plYear.value);
+
+  try {
+    const res = await fetch('/convert', { method: 'POST', body: form });
+    plProg.done();
+
+    if (!res.ok) { const j = await res.json().catch(()=>({})); throw new Error(j.error||'Server error '+res.status); }
+
+    const instances  = res.headers.get('X-Instance-Count');
+    const inputBytes = parseInt(res.headers.get('X-Input-Bytes')||'0');
+    const outBytes   = parseInt(res.headers.get('X-Output-Bytes')||'0');
+    const warnCount  = parseInt(res.headers.get('X-Warning-Count')||'0');
+    const warnRaw    = res.headers.get('X-Warnings');
+    const disp       = res.headers.get('Content-Disposition')||'';
+    const fnm        = (disp.match(/filename="([^"]+)"/) || [])[1] || 'output.rbxlx';
+
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+
+    plStats.innerHTML =
+      stat('Instances', fmtNum(instances||0), 'b') +
+      stat('Binary input', fmtBytes(inputBytes)) +
+      stat('XML output', fmtBytes(outBytes), 'g', '1/-1') +
+      (plYear.value ? stat('Target year', plYear.value, 'y') : '');
+
+    plDlRow.innerHTML = `<a class="dl-btn" href="${url}" download="${esc(fnm)}">⬇ Download ${esc(fnm)}</a>`;
+
+    if (warnCount > 0 && warnRaw) {
+      let ws; try { ws = JSON.parse(warnRaw); } catch { ws = []; }
+      plWarnSum.textContent = warnCount + ' substitution' + (warnCount===1?'':'s') + '/warning' + (warnCount===1?'':'s');
+      plWarnList.innerHTML = ws.map(w=>`<li>${esc(w)}</li>`).join('') + (warnCount>20?`<li><em>… and ${warnCount-20} more</em></li>`:'');
+      plWarns.style.display = 'block';
+      plWarns.open = warnCount <= 5;
+    } else { plWarns.style.display = 'none'; }
+
+    plRes.style.display = 'block';
+  } catch(err) {
+    plProg.stop();
+    plStats.innerHTML = `<div style="grid-column:1/-1" class="err-msg">❌ ${esc(err.message)}</div>`;
+    plDlRow.innerHTML = ''; plWarns.style.display = 'none';
+    plRes.style.display = 'block';
+  } finally {
+    plBtn.disabled = false; plBtn.textContent = 'Convert';
+  }
+});
+
+// ═══════════════ MESH CONVERSION ══════════════════════════════════════════════
+const msDrop  = makeDrop(document.getElementById('msDrop'), document.getElementById('msFile'), document.getElementById('msFname'), document.getElementById('msBtn'));
+const msProg  = makeProgress(document.getElementById('msProg'), document.getElementById('msBar'));
+const msBtn   = document.getElementById('msBtn');
+const msRes   = document.getElementById('msResult');
+const msStats = document.getElementById('msStats');
+const msChips = document.getElementById('msChips');
+const msDlRow = document.getElementById('msDlRow');
+
+msBtn.addEventListener('click', async () => {
+  const f = msDrop.getFile(); if (!f) return;
+  msBtn.disabled = true; msBtn.textContent = 'Parsing mesh…';
+  msProg.start(); msRes.style.display = 'none';
+
+  const form = new FormData();
+  form.append('file', f);
+
+  try {
+    const res = await fetch('/convert-mesh', { method: 'POST', body: form });
+    msProg.done();
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Mesh conversion failed');
+
+    const s = data.summary;
+
+    msStats.innerHTML =
+      stat('Version', 'v' + s.version, 'b') +
+      stat('Vertices', fmtNum(s.numVerts), 'g') +
+      stat('Faces', fmtNum(s.numFaces)) +
+      stat('Bounds', s.boundsSize);
+
+    const feats = [
+      { label: 'Tangents',       on: s.features.includes('tangent')  },
+      { label: 'Vertex colours', on: s.features.includes('colour')   },
+      { label: 'LODs',           on: s.features.includes('LOD')      },
+      { label: 'Skinning',       on: s.features.includes('skinning') },
+    ];
+    msChips.innerHTML = feats.map(({label,on}) =>
+      `<span class="chip${on?' on':''}">${label}</span>`).join('');
+
+    // Build download blobs
+    const objBlob = new Blob([data.obj], { type: 'text/plain' });
+    const mtlBlob = new Blob([data.mtl], { type: 'text/plain' });
+    const objUrl  = URL.createObjectURL(objBlob);
+    const mtlUrl  = URL.createObjectURL(mtlBlob);
+
+    msDlRow.innerHTML =
+      `<a class="dl-btn" href="${objUrl}" download="${esc(data.objName)}">⬇ Download OBJ</a>` +
+      `<a class="dl-btn sec" href="${mtlUrl}" download="${esc(data.mtlName)}">⬇ Download MTL</a>`;
+
+    msRes.style.display = 'block';
+  } catch(err) {
+    msProg.stop();
+    msStats.innerHTML = `<div style="grid-column:1/-1" class="err-msg">❌ ${esc(err.message)}</div>`;
+    msChips.innerHTML = ''; msDlRow.innerHTML = '';
+    msRes.style.display = 'block';
+  } finally {
+    msBtn.disabled = false; msBtn.textContent = 'Convert to OBJ';
+  }
+});
+
+// ── stat box helper ───────────────────────────────────────────────────────────
+function stat(label, value, cls='', span='') {
+  return `<div class="stat-box"${span?` style="grid-column:${span}"`:''}><div class="stat-lbl">${label}</div><div class="stat-val${cls?' '+cls:''}">${value}</div></div>`;
+}
+</script>
+</body>
+</html>

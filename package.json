@@ -1,0 +1,19 @@
+{
+  "name": "rbxl-converter",
+  "version": "1.0.0",
+  "description": "Local web app that converts Roblox .rbxl (binary place) files to .rbxlx (XML), with optional year-based compatibility filtering.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "fast-xml-parser": "^5.9.3",
+    "fzstd": "^0.1.1",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "lz4js": "^0.2.0"
+  }
+}
