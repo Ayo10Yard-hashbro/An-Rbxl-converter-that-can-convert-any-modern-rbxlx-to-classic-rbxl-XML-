@@ -42,21 +42,12 @@ Then open **http://localhost:3000** and upload a `.rbxl` file.
 - Very large places (tens of thousands of instances) will work but may take
   a few seconds to convert.
 
-## Fixed bugs
+## Hey, human here!
 
-- **LZ4 decompression failed on real (compressed) place files above roughly
-  1MB.** The custom LZ4 block decompressor rejected any match sequence with
-  an `offset === 0`, treating it as corrupt. That sequence shape is legal and
-  common for highly-repetitive data (identical booleans, identity CFrames,
-  zero transparency, etc.) — exactly the kind of data real place files are
-  full of — so larger files reliably tripped it. Fixed by letting the copy
-  proceed against the zero-initialized output buffer, matching how reference
-  LZ4 decoders handle it. Verified against thousands of LZ4-compressed test
-  chunks up to several MB.
-- **`Instance.Capabilities` (type `0x21`, `SecurityCapabilities`) and
-  `Content`-typed properties (type `0x22`: `TextureContent`, `ImageContent`,
-  `MeshContent`, `AudioContent`, PBR material maps, etc.) were unsupported**
-  and silently dropped, which is why they showed up as "Could not decode
-  property" warnings. Both are now fully decoded and written to the XML
-  output.
+- So uh up top is ai by Claude
+- Its for converting converting (of course)
+- So uhm how can i use?
+- Just go read.
 
+## License
+- Everything in the repo is in Gnu GpL v3
