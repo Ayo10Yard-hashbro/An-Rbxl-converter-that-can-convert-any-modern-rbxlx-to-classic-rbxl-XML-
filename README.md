@@ -56,7 +56,7 @@ Then open **http://localhost:3000** and upload a `.rbxl` file.
 
 > [!TIP]
 > Pro tip:
-> [ihavenofacebutihavetolulz](images/mrbeastpointing.png)
+> [ihavenofacebutihavetolulz](mrbeast-pointing.png)
 
 ## License
 - Everything in the repo is in Gnu GpL v3
