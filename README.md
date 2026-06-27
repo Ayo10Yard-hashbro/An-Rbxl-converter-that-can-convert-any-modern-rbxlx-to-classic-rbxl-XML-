@@ -55,7 +55,8 @@ Then open **http://localhost:3000** and upload a `.rbxl` file.
 > beware when converted your place may not have color(or lack of if the place is literally black and white Lol) just beware
 
 > [!TIP]
-> [Pro tip](images/mrbeastpointing.png)
+> Pro tip:
+> [ihavenofacebutihavetolulz](images/mrbeastpointing.png)
 
 ## License
 - Everything in the repo is in Gnu GpL v3
