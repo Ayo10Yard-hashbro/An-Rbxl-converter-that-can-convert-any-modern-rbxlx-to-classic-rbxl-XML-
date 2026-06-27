@@ -1,9 +1,9 @@
-# RBXL → RBXLX Converter
+# RBXL → RBXLX Converter (Or RBXLX Modern → Old RBXLX)
 
-A local Node.js + Express web app that converts Roblox binary place files
+An Node.js + Express web app that converts Roblox binary place files
 (`.rbxl`) into Roblox XML place files (`.rbxlx`), with an optional "target
 year" that rewrites the file to be compatible with older versions of Roblox
-Studio.
+Studio. `Hey uh Human here it is locally so it never ever leave your computer`
 
 ## Run it
 
@@ -45,9 +45,12 @@ Then open **http://localhost:3000** and upload a `.rbxl` file.
 ## Hey, human here!
 
 - So uh up top is ai by Claude
-- Its for converting converting (of course)
-- So uhm how can i use?
-- Just go read.
+- Its for converting (of course)
+- How to use?
+- So uh do git clone https://github.com/Ayo10Yard-hashbro/An-Rbxl-converter-that-can-convert-any-modern-rbxlx-to-classic-rbxl-XML- and do cmds up top
+- what are the use's of it?
+- its for converting to older classic places versions because? for making steal a brainrot to old roblox lol
+- Honestly i dont know what to type just do it.
 
 ## License
 - Everything in the repo is in Gnu GpL v3
